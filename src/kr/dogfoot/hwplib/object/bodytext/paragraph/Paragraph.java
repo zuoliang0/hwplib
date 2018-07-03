@@ -72,8 +72,8 @@ public class Paragraph {
 	/**
 	 * 문단 텍스트에 대한 객체를 생성한다.
 	 */
-	public void createText() {
-		text = new ParaText();
+	public ParaText createText() {
+		return text = new ParaText();
 	}
 
 	/**
@@ -95,8 +95,8 @@ public class Paragraph {
 	/**
 	 * 문단의 글자 모양에 대한 객체를 생성한다.
 	 */
-	public void createCharShape() {
-		charShape = new ParaCharShape();
+	public ParaCharShape createCharShape() {
+		return charShape = new ParaCharShape();
 	}
 
 	/**
@@ -118,8 +118,8 @@ public class Paragraph {
 	/**
 	 * 문단의 레이아웃에 대한 객체를 생성한다.
 	 */
-	public void createLineSeg() {
-		lineSeg = new ParaLineSeg();
+	public ParaLineSeg createLineSeg() {
+		return lineSeg = new ParaLineSeg();
 	}
 
 	/**

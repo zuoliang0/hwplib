@@ -12,12 +12,19 @@ public class Row {
 	 * 셀 리스트
 	 */
 	private ArrayList<Cell> cellList;
+	private Table thisTable;
+	private int rowNumber;
+
+	public Row(int rowNumber) {
+		this.rowNumber = rowNumber;
+		cellList = new ArrayList<Cell>();
+	}
 
 	/**
 	 * 생성자
 	 */
 	public Row() {
-		cellList = new ArrayList<Cell>();
+		this(0) ;
 	}
 
 	/**
@@ -26,7 +33,7 @@ public class Row {
 	 * @return 새로 생성된 셀 객체
 	 */
 	public Cell addNewCell() {
-		Cell c = new Cell();
+		Cell c = new Cell(rowNumber,cellList.size());
 		cellList.add(c);
 		return c;
 	}

@@ -15,11 +15,11 @@ public class Table {
 	/**
 	 * 행의 개수
 	 */
-	private int rowCount;
+	private int rowCount=0;
 	/**
 	 * 열의 개수
 	 */
-	private int columnCount;
+	private int columnCount=0;
 	/**
 	 * 셀 사이의 공간
 	 */
