@@ -58,57 +58,30 @@ public class TestInsertImage2Table {
             Paragraph firstParagraph1 = firstSection.getParagraph(0);
             firstParagraph1.getText().addExtendCharForTable();
             ControlTable table = (ControlTable) firstParagraph1.addNewControl(ControlType.Table);
-            CtrlHeaderGso ctrlHeader = table.getHeader();
-            Table tableRecord = table.getTable();
-            tableRecord.getProperty().setDivideAtPageBoundary(DivideAtPageBoundary.DivideByCell);
-            tableRecord.getProperty().setAutoRepeatTitleRow(false);
-            tableRecord.setCellSpacing(0);
-            tableRecord.setLeftInnerMargin(0);
-            tableRecord.setRightInnerMargin(0);
-            tableRecord.setTopInnerMargin(0);
-            tableRecord.setBottomInnerMargin(0);
-            tableRecord.setBorderFillId(getBorderFillIDForTableOutterLine(hwpFile));
-            tableRecord.getCellCountOfRowList().add(1);
-
             Row row = table.addNewRow();
-//            addCell(row,"呵呵人",0,0,0);
-
             Cell cell = row.addNewCell();
-            setListHeaderForCell(cell, 0, 0, 0);
-//            setParagraphForCell(cell, "123");
-
-
-            Paragraph p = cell.getParagraphList().addNewParagraph();
-            setParaHeader(p);
-//            setParaText(p, text);
-            p.createText().addExtendCharForGSO();
-
-
+            cell.setWidthAndHeight(mmToHwp(60), mmToHwp(60));
+            cell.createPicControl();
 
             //************************
-            int streamIndex = hwpFile.getBinData().getEmbeddedBinaryDataList().size() + 1;// 获取当前文档的最新bin文件id
-            String streamName = getStreamName(streamIndex, "jpg");//设置存放到文件中的文件名
+            // load pic
+            int streamIndex = hwpFile.getBinData().getEmbeddedBinaryDataList().size() + 1;
+            String streamName = getStreamName(streamIndex, "jpg");
             byte[] fileBinary = loadFile();
-            Rectangle shapePosition = new Rectangle(0, 3, 30, 30);//建一个框用来存放图片
-            hwpFile.getBinData().addNewEmbeddedBinaryData(streamName, fileBinary);//将文件放到文件合集中
-            int binDataID =addBinDataInDocInfo(hwpFile, streamIndex);
-            ControlPicture controlPicture = (ControlPicture) p.addNewGsoControl(GsoControlType.Picture);
+            Rectangle shapePosition = new Rectangle(0, 3, 30, 30);
+            hwpFile.getBinData().addNewEmbeddedBinaryData(streamName, fileBinary);
+            int binDataID = addBinDataInDocInfo(hwpFile, streamIndex);
 
-            controlPicture.setPostion(shapePosition.width,shapePosition.height);
+
+            Paragraph p = cell.getParagraphList().getParagraph(0);
+            ControlPicture controlPicture = (ControlPicture) p.addNewGsoControl(GsoControlType.Picture);
+            controlPicture.setPostion(shapePosition.width, shapePosition.height);
             controlPicture.setBinDataId(binDataID);
+            controlPicture.setWidthAndHeight(shapePosition);
 
             //-----------------------
 
-            setParaCharShape(p);
-            setParaLineSeg(p);
             table.computeColumnCount();
-//            setListHeaderForCell(cell,0 ,0,0);
-//            Paragraph firstParagraph = cell.getParagraphList().addNewParagraph();
-//            setParaHeader(firstParagraph);
-//            setParaCharShape(firstParagraph);
-//            setParaLineSeg(firstParagraph);
-//
-//            firstParagraph.createText();
 //
             String writePath = "sample_hwp\\test-second-rt.hwp";
             HWPWriter.toFile(hwpFile, writePath);
@@ -226,16 +199,17 @@ public class TestInsertImage2Table {
 
         return (int) ((double) mm * 72000.0f / 254.0f + 0.5f);
     }
+
     private static int fmm(long mm) {
         if (mm == 0) {
             return 1;
         }
-        return (int)  ((double) mm / 72000.0f * 254.0f - 0.5f);
+        return (int) ((double) mm / 72000.0f * 254.0f - 0.5f);
     }
 
     /**
-     *
      * 设置一个图片文件的存放关联信息。
+     *
      * @param file
      * @param streamIndex
      * @return

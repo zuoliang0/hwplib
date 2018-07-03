@@ -6,6 +6,7 @@ import kr.dogfoot.hwplib.object.bodytext.control.ctrlheader.CtrlHeader;
 import kr.dogfoot.hwplib.object.bodytext.control.ctrlheader.CtrlHeaderGso;
 import kr.dogfoot.hwplib.object.bodytext.control.ctrlheader.gso.*;
 import kr.dogfoot.hwplib.object.bodytext.control.gso.caption.Caption;
+import kr.dogfoot.hwplib.object.bodytext.control.table.DivideAtPageBoundary;
 import kr.dogfoot.hwplib.object.bodytext.control.table.Row;
 import kr.dogfoot.hwplib.object.bodytext.control.table.Table;
 
@@ -71,6 +72,15 @@ public class ControlTable extends Control {
 		header.setOutterMarginRight(0);
 		header.setOutterMarginTop(0);
 		header.setOutterMarginBottom(0);
+		table.getProperty().setDivideAtPageBoundary(DivideAtPageBoundary.DivideByCell);
+		table.getProperty().setAutoRepeatTitleRow(false);
+		table.setCellSpacing(0);
+		table.setLeftInnerMargin(0);
+		table.setRightInnerMargin(0);
+		table.setTopInnerMargin(0);
+		table.setBottomInnerMargin(0);
+		table.setBorderFillId(0);
+		table.getCellCountOfRowList().add(1);
 	}
 	private   int fromMM(int mm) {
 		if (mm == 0) {
