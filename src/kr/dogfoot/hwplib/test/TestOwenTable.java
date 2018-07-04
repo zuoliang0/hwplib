@@ -13,7 +13,6 @@ import kr.dogfoot.hwplib.object.bodytext.control.gso.shapecomponent.ShapeCompone
 import kr.dogfoot.hwplib.object.bodytext.control.gso.shapecomponent.lineinfo.*;
 import kr.dogfoot.hwplib.object.bodytext.control.gso.shapecomponent.shadowinfo.ShadowInfo;
 import kr.dogfoot.hwplib.object.bodytext.control.gso.shapecomponent.shadowinfo.ShadowType;
-import kr.dogfoot.hwplib.object.bodytext.control.gso.shapecomponenteach.ShapeComponentPicture;
 import kr.dogfoot.hwplib.object.bodytext.control.gso.shapecomponenteach.ShapeComponentRectangle;
 import kr.dogfoot.hwplib.object.bodytext.control.gso.textbox.LineChange;
 import kr.dogfoot.hwplib.object.bodytext.control.gso.textbox.TextVerticalAlignment;
@@ -41,7 +40,7 @@ import org.apache.poi.util.IOUtils;
 import java.awt.*;
 import java.io.*;
 
-public class TestInsertImage2Table {
+public class TestOwenTable {
     private HWPFile hwpFile;
     private ControlTable table;
     private Row row;
@@ -53,54 +52,100 @@ public class TestInsertImage2Table {
 
         HWPFile hwpFile = HWPReader.fromFile(filename);
         if (hwpFile != null) {
-            TestInsertImage2Table tmt = new TestInsertImage2Table();
+            TestOwenTable tmt = new TestOwenTable();
+
             Section firstSection = hwpFile.getBodyText().getSectionList().get(0);
-            Paragraph firstParagraph1 = firstSection.getParagraph(0);
-            firstParagraph1.getText().addExtendCharForTable();
-            ControlTable table = (ControlTable) firstParagraph1.addNewControl(ControlType.Table);
-            Row row = table.addNewRow();
-            Cell cell = row.addNewCell();
-            cell.setWidthAndHeight(mmToHwp(60), mmToHwp(60));
-            Paragraph p = cell.createPicControl();
+            Paragraph firstParagraph = firstSection.getParagraph(0);
 
-            //************************
-            // load pic
-            int streamIndex = hwpFile.getBinData().getEmbeddedBinaryDataList().size() + 1;
-            String streamName = getStreamName(streamIndex, "jpg");
-            byte[] fileBinary = loadFile();
-            Rectangle shapePosition = new Rectangle(0, 3, 30, 30);
-            hwpFile.getBinData().addNewEmbeddedBinaryData(streamName, fileBinary);
-            int binDataID = addBinDataInDocInfo(hwpFile, streamIndex);
+            // 문단에서 표 컨트롤의 위치를 표현하기 위한 확장 문자를 넣는다. 要在段落中扩展表格控件的位置，可以通过插入一个字符来停止它。
+            firstParagraph.getText().addExtendCharForTable();
 
-            ControlPicture controlPicture = (ControlPicture) p.addNewGsoControl(GsoControlType.Picture);
-            controlPicture.setPostion(shapePosition.width, shapePosition.height);
-            controlPicture.setBinDataId(binDataID);
-            controlPicture.setWidthAndHeight(shapePosition);
-            Cell newCell = row.addNewCell();
-            newCell.setWidthAndHeight(fromMM(shapePosition.width),fromMM(shapePosition.height));
-            newCell.createTextControl("123321");
-//            setListHeaderForCell(newCell, 0, 0, 0);
-//            setParagraphForCell(newCell, "123321");
-            int sum=5;
-            for (int i = 0; i < sum; i++) {
-                Row tempRow = table.addNewRow();
-                Cell cell1 = tempRow.addNewCell();
-                cell1.createTextControl("ttt"+i);
-                cell1 = tempRow.addNewCell();
-                cell1.createTextControl("ttt"+i);
+            // 문단에 표 컨트롤 추가한다.
+            ControlTable table = (ControlTable) firstParagraph.addNewControl(ControlType.Table);
+//			createTableControlAtFirstParagraph();
+
+
+//			setCtrlHeaderRecord();
+//            int zOrder = 0;
+//            CtrlHeaderGso ctrlHeader = table.getHeader();
+//            ctrlHeader.getProperty().setLikeWord(false);
+//            ctrlHeader.getProperty().setApplyLineSpace(false);
+//            ctrlHeader.getProperty().setVertRelTo(VertRelTo.Para);
+//            ctrlHeader.getProperty().setVertRelativeArrange(RelativeArrange.TopOrLeft);
+//            ctrlHeader.getProperty().setHorzRelTo(HorzRelTo.Para);
+//            ctrlHeader.getProperty().setHorzRelativeArrange(RelativeArrange.TopOrLeft);
+//            ctrlHeader.getProperty().setVertRelToParaLimit(false);
+//            ctrlHeader.getProperty().setAllowOverlap(false);
+//            ctrlHeader.getProperty().setWidthCriterion(WidthCriterion.Absolute);
+//            ctrlHeader.getProperty().setHeightCriterion(HeightCriterion.Absolute);
+//            ctrlHeader.getProperty().setProtectSize(false);
+//            ctrlHeader.getProperty().setTextFlowMethod(TextFlowMethod.Tight);
+//            ctrlHeader.getProperty().setTextHorzArrange(TextHorzArrange.BothSides);
+//            ctrlHeader.getProperty().setObjectNumberSort(ObjectNumberSort.Table);
+//            ctrlHeader.setxOffset(mmToHwp(0.0));
+//            ctrlHeader.setyOffset(mmToHwp(0.0));
+//            ctrlHeader.setWidth(mmToHwp(100.0));
+//            ctrlHeader.setHeight(mmToHwp(60.0));
+//            ctrlHeader.setzOrder(zOrder++);
+//            ctrlHeader.setOutterMarginLeft(0);
+//            ctrlHeader.setOutterMarginRight(0);
+//            ctrlHeader.setOutterMarginTop(0);
+//            ctrlHeader.setOutterMarginBottom(0);
+
+//			setTableRecordFor2By2Cells();
+            Table tableRecord = table.getTable();
+            tableRecord.getProperty().setDivideAtPageBoundary(DivideAtPageBoundary.DivideByCell);
+            tableRecord.getProperty().setAutoRepeatTitleRow(false);
+//            tableRecord.setRowCount(10);
+//            tableRecord.setColumnCount(10);
+            tableRecord.setCellSpacing(0);
+            tableRecord.setLeftInnerMargin(0);
+            tableRecord.setRightInnerMargin(0);
+            tableRecord.setTopInnerMargin(0);
+            tableRecord.setBottomInnerMargin(0);
+            tableRecord.setBorderFillId(getBorderFillIDForTableOutterLine(hwpFile));
+//            tableRecord.getCellCountOfRowList().add(10);
+//			add2By2Cell();
+            int borderFillIDForCell = 0;
+            //addFirstRow();
+//            Row row = table.addNewRow();
+//            addCell(row,"当前是0行的0列。happy",0,0,borderFillIDForCell);
+//            addCell(row,"当前是0行的1列。happy",0,1,borderFillIDForCell);
+//            addCell(row,"当前是0行的2列。happy",0,2,borderFillIDForCell);
+//            addCell(row,"当前是0行的3列。happy",0,3,borderFillIDForCell);
+            for (int i =1;i<=10;i++){
+                Row row = table.addNewRow();
+                for(int j=1;j<=10;j++){
+                    addCell(row,"当前是"+i+"行的"+j+"列。happy",i-1,j-1,borderFillIDForCell);
+                }
             }
+//            Row row = table.addNewRow();
+//            Cell cell = row.addNewCell();
+//            cell.setWidthAndHeight(60,60);
+
+
+
+
             table.computeColumnCount();
+//            int streamIndex = hwpFile.getBinData().getEmbeddedBinaryDataList().size() + 1;// 获取当前文档的最新bin文件id
+//            String streamName = getStreamName(streamIndex, "jpg");//设置存放到文件中的文件名
+//            byte[] fileBinary = loadFile(); //加载图片
+//            Rectangle shapePosition = new Rectangle(0, 3, 30, 30);//建一个框用来存放图片
+//            hwpFile.getBinData().addNewEmbeddedBinaryData(streamName, fileBinary);//将文件放到文件合集中
+//            int binDataID =addBinDataInDocInfo(hwpFile, streamIndex);
+//
+//            Paragraph paragraph = cell.getParagraphList().addNewParagraph();
+//            paragraph.getText().addExtendCharForGSO();
+////            ControlRectangle rectangle = (ControlRectangle) firstParagraph.addNewGsoControl(GsoControlType.Rectangle);
+//            ControlPicture controlPicture = (ControlPicture) paragraph.addNewGsoControl(GsoControlType.Picture);
+//            controlPicture.setWidthAndHeight(shapePosition);
+//            controlPicture.setPostion(shapePosition.width,shapePosition.height);
+//            controlPicture.setBinDataId(binDataID);
 
+//            setShapeComponent((ShapeComponentNormal) rectangle.getShapeComponent(), shapePosition,binDataID);
+//            setShapeComponentRectangle(rectangle.getShapeComponentRectangle(), shapePosition);
 
-            ControlTable table2 = (ControlTable) firstParagraph1.addNewControl(ControlType.Table);
-
-            Row row1 = table2.addNewRow();
-            Cell cell1 = row1.addNewCell();
-            cell1.createTextControl("ttttddd");
-            cell1.setWidthAndHeight(shapePosition.width,shapePosition.height);
-
-
-            String writePath = "sample_hwp\\test-second-rt.hwp";
+            String writePath = "sample_hwp\\test-my-table.hwp";
             HWPWriter.toFile(hwpFile, writePath);
             System.out.println("done");
         }
@@ -217,16 +262,9 @@ public class TestInsertImage2Table {
         return (int) ((double) mm * 72000.0f / 254.0f + 0.5f);
     }
 
-    private static int fmm(long mm) {
-        if (mm == 0) {
-            return 1;
-        }
-        return (int) ((double) mm / 72000.0f * 254.0f - 0.5f);
-    }
-
     /**
-     * 设置一个图片文件的存放关联信息。
      *
+     * 设置一个图片文件的存放关联信息。
      * @param file
      * @param streamIndex
      * @return
@@ -270,7 +308,7 @@ public class TestInsertImage2Table {
     private int zOrder = 0;
 
 
-    public static long mmToHwp(double mm) {
+    private static long mmToHwp(double mm) {
         return (long) (mm * 72000.0f / 254.0f + 0.5f);
     }
 
@@ -381,6 +419,7 @@ public class TestInsertImage2Table {
         ph.setParaShapeId(1);
         // 셀의 스타일을이미 만들어진 스타일으로 사용함
         ph.setStyleId((short) 1);
+        ;
         ph.getDivideSort().setDivideSection(false);
         ph.getDivideSort().setDivideMultiColumn(false);
         ph.getDivideSort().setDividePage(false);
@@ -436,4 +475,3 @@ public class TestInsertImage2Table {
 
 
 }
-
