@@ -137,7 +137,6 @@ public class ControlTable extends Control {
 	 */
 	public Row addNewRow() {
 		Row r = new Row(rowList.size());
-		table.setRowCount(table.getRowCount()+1);
 		rowList.add(r);
 		return r;
 	}

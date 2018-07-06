@@ -143,6 +143,7 @@ public class TestMakingTable {
         bf.getTopBorder().setType(BorderType.None);
         bf.getTopBorder().setThickness(BorderThickness.MM0_5);
         bf.getTopBorder().getColor().setValue(0x0);
+        bf.getTopBorder().setType(BorderType.Solid);
         bf.getBottomBorder().setType(BorderType.None);
         bf.getBottomBorder().setThickness(BorderThickness.MM0_5);
         bf.getBottomBorder().getColor().setValue(0x0);        

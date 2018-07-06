@@ -52,7 +52,6 @@ public class TestOwenTable {
 
         HWPFile hwpFile = HWPReader.fromFile(filename);
         if (hwpFile != null) {
-            TestOwenTable tmt = new TestOwenTable();
 
             Section firstSection = hwpFile.getBodyText().getSectionList().get(0);
             Paragraph firstParagraph = firstSection.getParagraph(0);
